@@ -203,14 +203,14 @@ function calculate() {
             if(pure){
                 resuls_text.innerHTML += "<h4>Pure crabs in the market: " + pure_crabs.length + "</h4>"
                 pure_crabs.forEach(c => {
-                    resuls_text.innerHTML += `${c.price} TUS - ${c.class_name} - ${c.breed_count} breed count -  <a href="https://marketplace.crabada.com/crabada/${c.crabada_id}" target="_blank" rel="noopener noreferrer">${c.crabada_id}</a></br>`
+                    resuls_text.innerHTML += `${c.price} TUS - ${c.class_name} - ${c.combat} BP - ${c.mine} MP - ${c.breed_count} breed count -  <a href="https://marketplace.crabada.com/crabada/${c.crabada_id}" target="_blank" rel="noopener noreferrer">${c.crabada_id}</a></br>`
                 })
                 resuls_text.innerHTML += "</br>"
             }
             if(legendary){
                 resuls_text.innerHTML += "<h4>Legendary crabs in the market: " + legendary_crabs.length + "</h4>"
                 legendary_crabs.forEach(c => {
-                    resuls_text.innerHTML += `${c.price} TUS - ${c.class_name} - ${c.breed_count} breed count -  <a href="https://marketplace.crabada.com/crabada/${c.crabada_id}" target="_blank" rel="noopener noreferrer">${c.crabada_id}</a></br>`
+                    resuls_text.innerHTML += `${c.price} TUS - ${c.class_name} - ${c.combat} BP - ${c.mine} MP - ${c.breed_count} breed count -  <a href="https://marketplace.crabada.com/crabada/${c.crabada_id}" target="_blank" rel="noopener noreferrer">${c.crabada_id}</a></br>`
                 })
                 resuls_text.innerHTML += "</br>"
             }
@@ -232,7 +232,7 @@ function calculate() {
             if(c56){
                 resuls_text.innerHTML += "<h4>5/6 crabs in the market: " + c56_crabs.length + "</h4>"
                 c56_crabs.forEach(c => {
-                    resuls_text.innerHTML += `${c.price} TUS - ${c.class_name} - ${c.breed_count} breed count -  <a href="https://marketplace.crabada.com/crabada/${c.crabada_id}" target="_blank" rel="noopener noreferrer">${c.crabada_id}</a></br>`
+                    resuls_text.innerHTML += `${c.price} TUS - ${c.class_name} - ${c.combat} BP - ${c.mine} MP - ${c.breed_count} breed count -  <a href="https://marketplace.crabada.com/crabada/${c.crabada_id}" target="_blank" rel="noopener noreferrer">${c.crabada_id}</a></br>`
                 })
                 resuls_text.innerHTML += "</br>"
             }
