@@ -36,10 +36,18 @@ html, body {
 	<div id="header">
 	<h2>Pure crab sniping!</h2>
 	<br></br>
-	<button id="calculateBtn" class="button" onclick="calculate()">Find pures!</button>
+    <form id="crabs_settings" onsubmit="return false">
+        <input type="checkbox" id="pure" name="pure" checked>
+        <label for="pure">Pure</label><br>
+        <input type="checkbox" id="legendary" name="legendary">
+        <label for="legendary">Legendary</label><br>
+        <input type="checkbox" id="highbp" name="highbp">
+        <label for="highbp">High BP (220+)</label><br>
+        <input type="checkbox" id="highmp" name="highmp">
+        <label for="highmp">High MP (77+)</label><br><br>
 
-	
-
+	<button id="calculateBtn" class="button" onclick="calculate()">Find crabs!</button>
+    </form>
 	
 	<div id="results" style="display: none">
 	<br></br>
@@ -124,11 +132,36 @@ const checkPure = (dna, className) => {
 
 }
 
+const checkLegendary = (dna) => {
+    hexString = dec2hex(dna);
+    dnafixed = `0${hexString}`
+
+    shell = lookup(parseInt(dnafixed.substring(4,6), 16)) > 0;
+    horn = lookup(parseInt(dnafixed.substring(6,8), 16)) > 0;
+    body = lookup(parseInt(dnafixed.substring(8,10), 16)) > 0;
+    mouth = lookup(parseInt(dnafixed.substring(10,12), 16)) > 0;
+    eyes = lookup(parseInt(dnafixed.substring(12,14), 16)) > 0;
+    pincer = lookup(parseInt(dnafixed.substring(14,16), 16)) > 0;
+
+    return shell||horn||body||mouth||eyes||pincer
+}
+
+
+
 function calculate() {
+	let pure = document.getElementById("pure").checked;
+	let legendary = document.getElementById("legendary").checked;
+	let highbp = document.getElementById("highbp").checked;
+	let highmp = document.getElementById("highmp").checked;
+
+    const pure_crabs = []
+    const legendary_crabs = []
+    const highbp_crabs = []
+    const highmp_crabs = []
+
 
     fetch(`https://api.crabada.com/public/crabada/selling?limit=1000&stage=1&orderBy=price&order=asc`).then(response => response.json())
         .then(function (response) {
-            crabsfixed = []
             crabs = response["result"]["data"];
             crabs.forEach(c =>
                 {
@@ -136,12 +169,21 @@ function calculate() {
                     aux.crabada_id = c.crabada_id
                     aux.class_name = c.class_name
                     aux.breed_count = c.breed_count
+                    aux.combat = c.hp + c.damage + c.armor
+                    aux.mine = c.speed + c.critical
                     aux.price = Math.round(c.price/1.0e18)
                     aux.pure_parts = +(c.class_id == c.horn_class) + +(c.class_id == c.shell_class) + +(c.class_id == c.body_class) + +(c.class_id == c.mouth_class) + +(c.class_id == c.eyes_class)+ +(c.class_id == c.pincers_class)
-                    if(aux.pure_parts == 6){
-                        if(checkPure(c.dna, c.class_name)){
-                            crabsfixed.push(aux)
-                        }
+                    if(aux.pure_parts == 6 && pure && checkPure(c.dna, c.class_name)){
+                            pure_crabs.push(aux)
+                    }
+                    if(legendary && checkLegendary(c.dna)){
+                            legendary_crabs.push(aux)
+                    }
+                    if(aux.combat >= 220 && highbp){
+                        highbp_crabs.push(aux)
+                    }
+                    if(aux.mine >= 77 && highmp){
+                        highmp_crabs.push(aux)
                     }
             })
 
@@ -149,10 +191,37 @@ function calculate() {
 	        results.style.display = "block";
 
             let resuls_text = document.getElementById("resuls_text");
-            resuls_text.innerHTML = "Pure crabs in the market: " + crabsfixed.length + "</br></br>"
-            crabsfixed.forEach(c => {
-                resuls_text.innerHTML += `${c.price} TUS - ${c.class_name} - ${c.breed_count} breed count -  <a href="https://marketplace.crabada.com/crabada/${c.crabada_id}" target="_blank" rel="noopener noreferrer">${c.crabada_id}</a></br>`
-            })
+            resuls_text.innerHTML = ''
+
+            if(pure){
+                resuls_text.innerHTML += "<h4>Pure crabs in the market: " + pure_crabs.length + "</h4>"
+                pure_crabs.forEach(c => {
+                    resuls_text.innerHTML += `${c.price} TUS - ${c.class_name} - ${c.breed_count} breed count -  <a href="https://marketplace.crabada.com/crabada/${c.crabada_id}" target="_blank" rel="noopener noreferrer">${c.crabada_id}</a></br>`
+                })
+                resuls_text.innerHTML += "</br>"
+            }
+            if(legendary){
+                resuls_text.innerHTML += "<h4>Legendary crabs in the market: " + legendary_crabs.length + "</h4>"
+                legendary_crabs.forEach(c => {
+                    resuls_text.innerHTML += `${c.price} TUS - ${c.class_name} - ${c.breed_count} breed count -  <a href="https://marketplace.crabada.com/crabada/${c.crabada_id}" target="_blank" rel="noopener noreferrer">${c.crabada_id}</a></br>`
+                })
+                resuls_text.innerHTML += "</br>"
+            }
+            if(highbp){
+                resuls_text.innerHTML += "<h4>High BP crabs in the market: " + highbp_crabs.length + "</h4>"
+                highbp_crabs.forEach(c => {
+                    resuls_text.innerHTML += `${c.price} TUS - ${c.class_name} - ${c.combat} BP - ${c.mine} MP - ${c.breed_count} breed count -  <a href="https://marketplace.crabada.com/crabada/${c.crabada_id}" target="_blank" rel="noopener noreferrer">${c.crabada_id}</a></br>`
+                })
+                resuls_text.innerHTML += "</br>"
+            }
+
+            if(highmp){
+                resuls_text.innerHTML += "<h4>High MP crabs in the market: " + highmp_crabs.length + "</h4>"
+                highmp_crabs.forEach(c => {
+                    resuls_text.innerHTML += `${c.price} TUS - ${c.class_name} - ${c.combat} BP - ${c.mine} MP - ${c.breed_count} breed count -  <a href="https://marketplace.crabada.com/crabada/${c.crabada_id}" target="_blank" rel="noopener noreferrer">${c.crabada_id}</a></br>`
+                })
+                resuls_text.innerHTML += "</br>"
+            }
 
                           
         }).catch(function (error) {
