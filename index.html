@@ -44,7 +44,9 @@ html, body {
         <input type="checkbox" id="highbp" name="highbp">
         <label for="highbp">High BP (220+)</label><br>
         <input type="checkbox" id="highmp" name="highmp">
-        <label for="highmp">High MP (77+)</label><br><br>
+        <label for="highmp">High MP (77+)</label><br>
+        <input type="checkbox" id="c56" name="c56">
+        <label for="c56">5/6</label><br><br>
 
 	<button id="calculateBtn" class="button" onclick="calculate()">Find crabs!</button>
     </form>
@@ -153,11 +155,13 @@ function calculate() {
 	let legendary = document.getElementById("legendary").checked;
 	let highbp = document.getElementById("highbp").checked;
 	let highmp = document.getElementById("highmp").checked;
+	let c56 = document.getElementById("c56").checked;
 
     const pure_crabs = []
     const legendary_crabs = []
     const highbp_crabs = []
     const highmp_crabs = []
+    const c56_crabs = []
 
 
     fetch(`https://api.crabada.com/public/crabada/selling?limit=1000&stage=1&orderBy=price&order=asc`).then(response => response.json())
@@ -184,6 +188,9 @@ function calculate() {
                     }
                     if(aux.mine >= 77 && highmp){
                         highmp_crabs.push(aux)
+                    }
+                    if(aux.pure_parts == 5 && c56){
+                        c56_crabs.push(aux)
                     }
             })
 
@@ -222,7 +229,13 @@ function calculate() {
                 })
                 resuls_text.innerHTML += "</br>"
             }
-
+            if(c56){
+                resuls_text.innerHTML += "<h4>5/6 crabs in the market: " + c56_crabs.length + "</h4>"
+                c56_crabs.forEach(c => {
+                    resuls_text.innerHTML += `${c.price} TUS - ${c.class_name} - ${c.breed_count} breed count -  <a href="https://marketplace.crabada.com/crabada/${c.crabada_id}" target="_blank" rel="noopener noreferrer">${c.crabada_id}</a></br>`
+                })
+                resuls_text.innerHTML += "</br>"
+            }
                           
         }).catch(function (error) {
             console.log(error);
