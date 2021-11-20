@@ -80,7 +80,7 @@
     }
 </style>
 
-<body>
+<body onload="checkSettings();">
     <ul class="nav">
         <li><a href="https://crabada-resources.github.io/looting_statistics/">Looting statistics</a></li>
         <li><a href="https://crabada-resources.github.io/should_i_buy/">Should I buy this crab?</a></li>
@@ -101,7 +101,8 @@
             <label for="highmp">High MP (77+)</label><br>
             <input type="checkbox" id="c56" name="c56">
             <label for="c56">5/6</label><br>
-            Max price (optional): &nbsp;&nbsp;<input type="number" id="price" step="1" style="width: 10em" /><br><br>
+            Max price (optional): &nbsp;&nbsp;<input type="number" id="price" step="1" style="width: 10em" /><br>
+            Max breed (optional): &nbsp;&nbsp;<input type="number" id="breed" step="1" style="width: 10em" /><br><br>
 
             <button id="calculateBtn" class="button" onclick="calculate()">Find crabs!</button>
         </form>
@@ -115,6 +116,39 @@
 
 </body>
 <script type="text/javascript">
+    function checkSettings() {
+        let pure = document.getElementById("pure");
+        let legendary = document.getElementById("legendary");
+        let highbp = document.getElementById("highbp");
+        let highmp = document.getElementById("highmp");
+        let c56 = document.getElementById("c56");
+        let price = document.getElementById("price");
+        let breed = document.getElementById("breed");
+
+
+        if (localStorage.getItem("pure") != null) {
+            pure.setAttribute("checked", localStorage.getItem("pure"));
+        }
+        if (localStorage.getItem("legendary") != null) {
+            legendary.setAttribute("checked", localStorage.getItem("legendary"));
+        }
+        if (localStorage.getItem("highbp") != null) {
+            highbp.setAttribute("checked", localStorage.getItem("highbp"));
+        }
+        if (localStorage.getItem("highmp") != null) {
+            highmp.setAttribute("checked", localStorage.getItem("highmp"));
+        }
+        if (localStorage.getItem("c56") != null) {
+            c56.setAttribute("checked", localStorage.getItem("c56"));
+        }
+        if (localStorage.getItem("price") != null) {
+            price.setAttribute("value", localStorage.getItem("price"));
+        }
+        if (localStorage.getItem("breed") != null) {
+            breed.setAttribute("value", localStorage.getItem("breed"));
+        }
+        
+    }
 
     const dec2hex = str => { // .toString(16) only works up to 2^53
         var dec = str.toString().split(''), sum = [], hex = [], i, s
@@ -215,6 +249,16 @@
         let c56 = document.getElementById("c56").checked;
 
         let price = document.getElementById("price").value;
+        let breed = document.getElementById("breed").value;
+
+        localStorage.setItem("pure", pure);
+        localStorage.setItem("legendary", legendary);
+        localStorage.setItem("highbp", highbp);
+        localStorage.setItem("highmp", highmp);
+        localStorage.setItem("c56", c56);
+        localStorage.setItem("price", price);
+        localStorage.setItem("breed", breed);
+
 
         const pure_crabs = []
         const legendary_crabs = []
@@ -229,13 +273,16 @@
                 crabs.forEach(c => {
                     aux = {}
                     aux.price = Math.round(c.price / 1.0e18)
+                    aux.breed_count = c.breed_count
                     if(price && aux.price >= price){
+                        return
+                    }
+                    if(breed && aux.breed >= breed){
                         return
                     }
 
                     aux.crabada_id = c.crabada_id
                     aux.class_name = c.class_name
-                    aux.breed_count = c.breed_count
                     aux.combat = c.hp + c.damage + c.armor
                     aux.mine = c.speed + c.critical
                     aux.origin = c.is_origin == 1 ? 'Yes' : 'No'
