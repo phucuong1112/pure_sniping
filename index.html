@@ -85,6 +85,7 @@
         <li><a href="https://crabada-resources.github.io/looting_statistics/">Looting statistics</a></li>
         <li><a href="https://crabada-resources.github.io/should_i_buy/">Should I buy this crab?</a></li>
         <li><a href="https://crabada-resources.github.io/tavern_statistics/">Tavern Statistics</a></li>
+        <li><a href="https://crabada-resources.github.io/breeding_calculator/">Breeding calculator</a></li>
     </ul>
 
     <div id="header">
@@ -242,6 +243,9 @@
         clearForm()
         let loading = document.getElementById("loading");
 
+        let results = document.getElementById("results");
+        results.style.display = "block";
+
         let pure = document.getElementById("pure").checked;
         let legendary = document.getElementById("legendary").checked;
         let highbp = document.getElementById("highbp").checked;
@@ -306,9 +310,6 @@
                     }
                 })
                 loading.innerHTML = "";
-
-                let results = document.getElementById("results");
-                results.style.display = "block";
 
                 let resuls_text = document.getElementById("resuls_text");
                 resuls_text.innerHTML = ''
