@@ -228,12 +228,12 @@
         hexString = dec2hex(dna);
         dnafixed = `0${hexString}`
 
-        shell = lookup(parseInt(dnafixed.substring(4, 6), 16)) > 0;
-        horn = lookup(parseInt(dnafixed.substring(6, 8), 16)) > 0;
-        body = lookup(parseInt(dnafixed.substring(8, 10), 16)) > 0;
-        mouth = lookup(parseInt(dnafixed.substring(10, 12), 16)) > 0;
-        eyes = lookup(parseInt(dnafixed.substring(12, 14), 16)) > 0;
-        pincer = lookup(parseInt(dnafixed.substring(14, 16), 16)) > 0;
+        shell = parseInt(dnafixed.substring(4, 6), 16) > 0;
+        horn = parseInt(dnafixed.substring(6, 8), 16) > 0;
+        body = parseInt(dnafixed.substring(8, 10), 16) > 0;
+        mouth = parseInt(dnafixed.substring(10, 12), 16) > 0;
+        eyes = parseInt(dnafixed.substring(12, 14), 16) > 0;
+        pincer = parseInt(dnafixed.substring(14, 16), 16) > 0;
 
         return shell || horn || body || mouth || eyes || pincer
     }
