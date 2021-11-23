@@ -101,7 +101,7 @@
             <input type="checkbox" id="highmp" name="highmp">
             <label for="highmp">High MP (77+)</label><br>
             <input type="checkbox" id="c56" name="c56">
-            <label for="c56">5/6</label><br>
+            <label for="c56">5/6 and 6/6 non-pure</label><br>
             Max price (optional): &nbsp;&nbsp;<input type="number" id="price" step="1" style="width: 10em" /><br>
             Max breed (optional): &nbsp;&nbsp;<input type="number" id="breed" step="1" style="width: 10em" /><br><br>
 
@@ -306,7 +306,7 @@
                     if (aux.mine >= 77 && highmp) {
                         highmp_crabs.push(aux)
                     }
-                    if (aux.pure_parts == 5 && c56) {
+                    if (c56 && (aux.pure_parts == 5 || (aux.pure_parts == 6 && aux.alleles < 12))) {
                         c56_crabs.push(aux)
                     }
                 })
@@ -375,7 +375,7 @@
                     }
                 }
                 if (c56) {
-                    resuls_text.innerHTML += "<h4>5/6 crabs in the market: " + c56_crabs.length + "</h4>"
+                    resuls_text.innerHTML += "<h4>5/6 or 6/6 non-pure crabs in the market: " + c56_crabs.length + "</h4>"
                     if (c56_crabs.length > 0) {
                         let table = ''
                         table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th></tr></thead><tbody>`
