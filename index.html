@@ -237,7 +237,76 @@
         return shell || horn || body || mouth || eyes || pincer
     }
 
+    function lookup_subclass(id) {
+        subclass_map = {
+            1: "Emeraldo",
+            2: "Crazor",
+            3: "Vocrano",
+            4: "Spikey",
+            5: "Frozo",
+            6: "Cratos",
+            7: "Rubie",
+            8: "Amida",
+            16: "Staro",
+            17: "Craken",
+            18: "Crobster",
+            19: "Cralmon",
+            20: "Creasure",
+            21: "Crucket",
+            22: "Crele",
+            23: "Crotopus",
+            31: "Bitcoin",
+            32: "Cardano",
+            33: "Near",
+            34: "Ether",
+            35: "Cz",
+            36: "Fantom",
+            37: "Avalanche",
+            38: "Solana",
+            46: "Cragma",
+            47: "C-Rex",
+            48: "Charoite",
+            49: "Rocco",
+            50: "Chief",
+            51: "Cropion",
+            52: "Crazurite",
+            53: "Crava",
+            61: "Twinner",
+            62: "Onepunch",
+            63: "Cropter",
+            64: "Plasma",
+            65: "Lasery",
+            66: "Redeye",
+            67: "Crocket",
+            68: "Gear",
+            76: "Skul",
+            77: "Cragon",
+            78: "Crombie",
+            79: "Deadeye",
+            80: "Cranosis",
+            81: "Crailer",
+            82: "Camun-Ra",
+            83: "Crauldron",
+            91: "Pearlio",
+            92: "Lapidari",
+            93: "Paraiba",
+            94: "Cramethyst",
+            95: "Cranet",
+            96: "Croyo",
+            97: "Earl Cray",
+            98: "Magnifiso",
+            106: "Natura",
+            107: "Freshie",
+            108: "Adam",
+            109: "Eva",
+            110: "Bulbie",
+            111: "Celon",
+            112: "Cranana",
+            113: "Crawberry"
+        }
 
+        return subclass_map[id]
+    }
 
     function calculate() {
         clearForm()
@@ -290,6 +359,7 @@
                     aux.combat = c.hp + c.damage + c.armor
                     aux.mine = c.speed + c.critical
                     aux.origin = c.is_origin == 1 ? 'Yes' : 'No'
+                    aux.subclass_name = lookup_subclass(c.crabada_subclass)
                     aux.pure_parts = +(c.class_id == c.horn_class) + +(c.class_id == c.shell_class) + +(c.class_id == c.body_class) + +(c.class_id == c.mouth_class) + +(c.class_id == c.eyes_class) + +(c.class_id == c.pincers_class)
                     aux.alleles = countAlleles(c.dna, c.class_name)
                     aux.url = `<a href="https://marketplace.crabada.com/crabada/${c.crabada_id}" target="_blank" rel="noopener noreferrer">${c.crabada_id}</a>`
@@ -319,9 +389,9 @@
                     resuls_text.innerHTML += "<h4>Pure crabs in the market: " + pure_crabs.length + "</h4>"
                     if (pure_crabs.length > 0) {
                         let table = ''
-                        table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
+                        table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Subclass</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
                         pure_crabs.forEach(c => {
-                            table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
+                            table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.subclass_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
                         })
                         table += "</tbody></table></br>"
                         resuls_text.innerHTML += table
@@ -335,9 +405,9 @@
                     resuls_text.innerHTML += "<h4>Legendary crabs in the market: " + legendary_crabs.length + "</h4>"
                     if (legendary_crabs.length > 0) {
                         let table = ''
-                        table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
+                        table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Subclass</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
                         legendary_crabs.forEach(c => {
-                            table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
+                            table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.subclass_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
                         })
                         table += "</tbody></table></br>"
                         resuls_text.innerHTML += table
@@ -349,9 +419,9 @@
                     resuls_text.innerHTML += "<h4>High BP crabs in the market: " + highbp_crabs.length + "</h4>"
                     if (highbp_crabs.length > 0) {
                         let table = ''
-                        table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
+                        table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Subclass</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
                         highbp_crabs.forEach(c => {
-                            table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
+                            table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.subclass_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
                         })
                         table += "</tbody></table></br>"
                         resuls_text.innerHTML += table
@@ -364,9 +434,9 @@
                     resuls_text.innerHTML += "<h4>High MP crabs in the market: " + highmp_crabs.length + "</h4>"
                     if (highmp_crabs.length > 0) {
                         let table = ''
-                        table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
+                        table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Subclass</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
                         highmp_crabs.forEach(c => {
-                            table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
+                            table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.subclass_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
                         })
                         table += "</tbody></table></br>"
                         resuls_text.innerHTML += table
@@ -378,9 +448,9 @@
                     resuls_text.innerHTML += "<h4>5/6 or 6/6 non-pure crabs in the market: " + c56_crabs.length + "</h4>"
                     if (c56_crabs.length > 0) {
                         let table = ''
-                        table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
+                        table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Subclass</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
                         c56_crabs.forEach(c => {
-                            table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
+                            table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.subclass_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
                         })
                         table += "</tbody></table></br>"
                         resuls_text.innerHTML += table
