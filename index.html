@@ -436,11 +436,11 @@
                         resuls_text.innerHTML = ''
 
                         if (pure) {
-                            resuls_text.innerHTML += "<h4>Pure crabs in the market: " + pure_eggs_list.length + "</h4>"
-                            if (pure_eggs_list.length > 0) {
+                            resuls_text.innerHTML += "<h4>Pure crabs in the market: " + pure_crabs.length + "</h4>"
+                            if (pure_crabs.length > 0) {
                                 let table = ''
                                 table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Subclass</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
-                                pure_eggs_list.forEach(c => {
+                                pure_crabs.forEach(c => {
                                     table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.subclass_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
                                 })
                                 table += "</tbody></table></br>"
