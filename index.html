@@ -93,6 +93,8 @@
         <form id="crabs_settings" onsubmit="return false">
             <input type="checkbox" id="pure" name="pure" checked>
             <label for="pure">Pure</label><br>
+            <input type="checkbox" id="pure_eggs" name="pure_eggs">
+            <label for="pure_eggs">Pure Eggs</label><br>
             <input type="checkbox" id="legendary" name="legendary">
             <label for="legendary">Legendary</label><br>
             <input type="checkbox" id="highbp" name="highbp">
@@ -119,6 +121,7 @@
 <script type="text/javascript">
     function checkSettings() {
         let pure = document.getElementById("pure");
+        let pure_eggs = document.getElementById("pure_eggs");
         let legendary = document.getElementById("legendary");
         let highbp = document.getElementById("highbp");
         let highmp = document.getElementById("highmp");
@@ -130,6 +133,11 @@
         if (localStorage.getItem("pure") != null) {
             pure.setAttribute("checked", localStorage.getItem("pure"));
         }
+
+        if (localStorage.getItem("pure_eggs") != null) {
+            pure_eggs.setAttribute("checked", localStorage.getItem("pure_eggs"));
+        }
+
         if (localStorage.getItem("legendary") != null) {
             legendary.setAttribute("checked", localStorage.getItem("legendary"));
         }
@@ -316,6 +324,7 @@
         results.style.display = "block";
 
         let pure = document.getElementById("pure").checked;
+        let pure_eggs = document.getElementById("pure_eggs").checked;
         let legendary = document.getElementById("legendary").checked;
         let highbp = document.getElementById("highbp").checked;
         let highmp = document.getElementById("highmp").checked;
@@ -325,6 +334,7 @@
         let breed = document.getElementById("breed").value;
 
         localStorage.setItem("pure", pure);
+        localStorage.setItem("pure_eggs", pure_eggs);
         localStorage.setItem("legendary", legendary);
         localStorage.setItem("highbp", highbp);
         localStorage.setItem("highmp", highmp);
@@ -334,131 +344,191 @@
 
 
         const pure_crabs = []
+        const eggs_list = []
+        const pure_eggs_list = []
         const legendary_crabs = []
         const highbp_crabs = []
         const highmp_crabs = []
         const c56_crabs = []
 
 
-        fetch(`https://api.crabada.com/public/crabada/selling?limit=2000&stage=1&orderBy=price&order=asc`).then(response => response.json())
+        fetch(`https://api.crabada.com/public/crabada/selling?limit=2000&orderBy=price&order=asc`).then(response => response.json())
             .then(function (response) {
                 crabs = response["result"]["data"];
                 crabs.forEach(c => {
                     aux = {}
                     aux.price = Math.round(c.price / 1.0e18)
-                    aux.breed_count = c.breed_count
                     if (price && aux.price >= price) {
                         return
                     }
-                    if (breed != '' && +aux.breed_count > +breed) {
-                        return
-                    }
-
                     aux.crabada_id = c.crabada_id
-                    aux.class_name = c.class_name
-                    aux.combat = c.hp + c.damage + c.armor
-                    aux.mine = c.speed + c.critical
-                    aux.origin = c.is_origin == 1 ? 'Yes' : 'No'
-                    aux.subclass_name = lookup_subclass(c.crabada_subclass)
-                    aux.pure_parts = +(c.class_id == c.horn_class) + +(c.class_id == c.shell_class) + +(c.class_id == c.body_class) + +(c.class_id == c.mouth_class) + +(c.class_id == c.eyes_class) + +(c.class_id == c.pincers_class)
-                    aux.alleles = countAlleles(c.dna, c.class_name)
                     aux.url = `<a href="https://marketplace.crabada.com/crabada/${c.crabada_id}" target="_blank" rel="noopener noreferrer">${c.crabada_id}</a>`
-                    aux.dnaurl = `<a href="https://crabada-resources.github.io/breeding_calculator?crabid=${c.crabada_id}" target="_blank" rel="noopener noreferrer">Link</a>`
-                    if (aux.pure_parts == 6 && pure && aux.alleles == 12) {
-                        pure_crabs.push(aux)
-                    }
-                    if (legendary && checkLegendary(c.dna)) {
-                        legendary_crabs.push(aux)
-                    }
-                    if (aux.combat >= 220 && highbp) {
-                        highbp_crabs.push(aux)
-                    }
-                    if (aux.mine >= 77 && highmp) {
-                        highmp_crabs.push(aux)
-                    }
-                    if (c56 && (aux.pure_parts == 5 || (aux.pure_parts == 6 && aux.alleles < 12))) {
-                        c56_crabs.push(aux)
+
+                    if (c.stage == 1) {
+                        aux.breed_count = c.breed_count
+
+                        if (breed != '' && +aux.breed_count > +breed) {
+                            return
+                        }
+
+                        aux.class_name = c.class_name
+                        aux.combat = c.hp + c.damage + c.armor
+                        aux.mine = c.speed + c.critical
+                        aux.origin = c.is_origin == 1 ? 'Yes' : 'No'
+                        aux.subclass_name = lookup_subclass(c.crabada_subclass)
+                        aux.pure_parts = +(c.class_id == c.horn_class) + +(c.class_id == c.shell_class) + +(c.class_id == c.body_class) + +(c.class_id == c.mouth_class) + +(c.class_id == c.eyes_class) + +(c.class_id == c.pincers_class)
+                        aux.alleles = countAlleles(c.dna, c.class_name)
+                        aux.dnaurl = `<a href="https://crabada-resources.github.io/breeding_calculator?crabid=${c.crabada_id}" target="_blank" rel="noopener noreferrer">Link</a>`
+                        if (aux.pure_parts == 6 && pure && aux.alleles == 12) {
+                            pure_crabs.push(aux)
+                        }
+                        if (legendary && checkLegendary(c.dna)) {
+                            legendary_crabs.push(aux)
+                        }
+                        if (aux.combat >= 220 && highbp) {
+                            highbp_crabs.push(aux)
+                        }
+                        if (aux.mine >= 77 && highmp) {
+                            highmp_crabs.push(aux)
+                        }
+                        if (c56 && (aux.pure_parts == 5 || (aux.pure_parts == 6 && aux.alleles < 12))) {
+                            c56_crabs.push(aux)
+                        }
+                    } else {
+                        if (pure_eggs) {
+                            aux.dnaurl = `<a href="https://crabada-resources.github.io/breeding_calculator?eggid=${c.crabada_id}" target="_blank" rel="noopener noreferrer">Link</a>`
+                            eggs_list.push(aux)
+                        }
                     }
                 })
-                loading.innerHTML = "";
+                const requests = []
+                eggs_list.forEach(e => {
+                    requests.push(fetch(`https://api.crabada.com/public/crabada/family/${e.crabada_id}`).then(response => response.json()))
+                })
+                let count = -1
+                Promise.all(requests)
+                    .then(function (responses) {
+                        responses.forEach(r => {
+                            count+=1
+                            const parent1 = r["result"]["crabada_parents"][0]
+                            const parent2 = r["result"]["crabada_parents"][1]
+                            if(parent1.class_name != parent2.class_name){
+                                return
+                            }
+                            if(parent1.pure_number !=6 || parent2.pure_number !=6){
+                                return
+                            }
 
-                let resuls_text = document.getElementById("resuls_text");
-                resuls_text.innerHTML = ''
-
-                if (pure) {
-                    resuls_text.innerHTML += "<h4>Pure crabs in the market: " + pure_crabs.length + "</h4>"
-                    if (pure_crabs.length > 0) {
-                        let table = ''
-                        table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Subclass</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
-                        pure_crabs.forEach(c => {
-                            table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.subclass_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
+                            parent1.alleles = countAlleles(parent1.dna, parent1.class_name)
+                            parent2.alleles = countAlleles(parent2.dna, parent2.class_name)
+                            console.log(eggs_list[count].crabada_id, parent1.alleles, parent2.alleles)
+                            if(parent1.alleles != 12 || parent2.alleles != 12){
+                                return
+                            }
+                            let aux = eggs_list[count]
+                            aux.class_name = parent1.class_name
+                            pure_eggs_list.push(aux)
                         })
-                        table += "</tbody></table></br>"
-                        resuls_text.innerHTML += table
 
-                    } else {
-                        resuls_text.innerHTML += `None found!`
-                    }
 
-                }
-                if (legendary) {
-                    resuls_text.innerHTML += "<h4>Legendary crabs in the market: " + legendary_crabs.length + "</h4>"
-                    if (legendary_crabs.length > 0) {
-                        let table = ''
-                        table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Subclass</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
-                        legendary_crabs.forEach(c => {
-                            table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.subclass_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
-                        })
-                        table += "</tbody></table></br>"
-                        resuls_text.innerHTML += table
-                    } else {
-                        resuls_text.innerHTML += `None found!`
-                    }
-                }
-                if (highbp) {
-                    resuls_text.innerHTML += "<h4>High BP crabs in the market: " + highbp_crabs.length + "</h4>"
-                    if (highbp_crabs.length > 0) {
-                        let table = ''
-                        table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Subclass</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
-                        highbp_crabs.forEach(c => {
-                            table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.subclass_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
-                        })
-                        table += "</tbody></table></br>"
-                        resuls_text.innerHTML += table
-                    } else {
-                        resuls_text.innerHTML += `None found!`
-                    }
-                }
+                        loading.innerHTML = "";
 
-                if (highmp) {
-                    resuls_text.innerHTML += "<h4>High MP crabs in the market: " + highmp_crabs.length + "</h4>"
-                    if (highmp_crabs.length > 0) {
-                        let table = ''
-                        table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Subclass</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
-                        highmp_crabs.forEach(c => {
-                            table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.subclass_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
-                        })
-                        table += "</tbody></table></br>"
-                        resuls_text.innerHTML += table
-                    } else {
-                        resuls_text.innerHTML += `None found!`
-                    }
-                }
-                if (c56) {
-                    resuls_text.innerHTML += "<h4>5/6 or 6/6 non-pure crabs in the market: " + c56_crabs.length + "</h4>"
-                    if (c56_crabs.length > 0) {
-                        let table = ''
-                        table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Subclass</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
-                        c56_crabs.forEach(c => {
-                            table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.subclass_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
-                        })
-                        table += "</tbody></table></br>"
-                        resuls_text.innerHTML += table
-                    } else {
-                        resuls_text.innerHTML += `None found!`
-                    }
-                }
+                        let resuls_text = document.getElementById("resuls_text");
+                        resuls_text.innerHTML = ''
 
+                        if (pure) {
+                            resuls_text.innerHTML += "<h4>Pure crabs in the market: " + pure_eggs_list.length + "</h4>"
+                            if (pure_eggs_list.length > 0) {
+                                let table = ''
+                                table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Subclass</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
+                                pure_eggs_list.forEach(c => {
+                                    table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.subclass_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
+                                })
+                                table += "</tbody></table></br>"
+                                resuls_text.innerHTML += table
+
+                            } else {
+                                resuls_text.innerHTML += `None found!`
+                            }
+
+                        }
+
+                        if (pure_eggs) {
+                            resuls_text.innerHTML += "<h4>Pure crabs eggs in the market: " + pure_eggs_list.length + "</h4>"
+                            if (pure_eggs_list.length > 0) {
+                                let table = ''
+                                table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
+                                    pure_eggs_list.forEach(c => {
+                                    table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
+                                })
+                                table += "</tbody></table></br>"
+                                resuls_text.innerHTML += table
+
+                            } else {
+                                resuls_text.innerHTML += `None found!`
+                            }
+
+                        }
+                        if (legendary) {
+                            resuls_text.innerHTML += "<h4>Legendary crabs in the market: " + legendary_crabs.length + "</h4>"
+                            if (legendary_crabs.length > 0) {
+                                let table = ''
+                                table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Subclass</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
+                                legendary_crabs.forEach(c => {
+                                    table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.subclass_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
+                                })
+                                table += "</tbody></table></br>"
+                                resuls_text.innerHTML += table
+                            } else {
+                                resuls_text.innerHTML += `None found!`
+                            }
+                        }
+                        if (highbp) {
+                            resuls_text.innerHTML += "<h4>High BP crabs in the market: " + highbp_crabs.length + "</h4>"
+                            if (highbp_crabs.length > 0) {
+                                let table = ''
+                                table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Subclass</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
+                                highbp_crabs.forEach(c => {
+                                    table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.subclass_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
+                                })
+                                table += "</tbody></table></br>"
+                                resuls_text.innerHTML += table
+                            } else {
+                                resuls_text.innerHTML += `None found!`
+                            }
+                        }
+
+                        if (highmp) {
+                            resuls_text.innerHTML += "<h4>High MP crabs in the market: " + highmp_crabs.length + "</h4>"
+                            if (highmp_crabs.length > 0) {
+                                let table = ''
+                                table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Subclass</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
+                                highmp_crabs.forEach(c => {
+                                    table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.subclass_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
+                                })
+                                table += "</tbody></table></br>"
+                                resuls_text.innerHTML += table
+                            } else {
+                                resuls_text.innerHTML += `None found!`
+                            }
+                        }
+                        if (c56) {
+                            resuls_text.innerHTML += "<h4>5/6 or 6/6 non-pure crabs in the market: " + c56_crabs.length + "</h4>"
+                            if (c56_crabs.length > 0) {
+                                let table = ''
+                                table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Subclass</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
+                                c56_crabs.forEach(c => {
+                                    table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.subclass_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
+                                })
+                                table += "</tbody></table></br>"
+                                resuls_text.innerHTML += table
+                            } else {
+                                resuls_text.innerHTML += `None found!`
+                            }
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
             }).catch(function (error) {
                 console.log(error);
             });
