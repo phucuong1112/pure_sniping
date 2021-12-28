@@ -49,12 +49,15 @@
         padding: 10px;
     }
 
+    .hscroll {
+        overflow-x: auto;
+        /* Horizontal */
+    }
+
     table {
         border-collapse: collapse;
-        width: 50%;
         margin-left: auto;
         margin-right: auto;
-        table-layout: fixed;
     }
 
     td,
@@ -409,19 +412,19 @@
                 Promise.all(requests)
                     .then(function (responses) {
                         responses.forEach(r => {
-                            count+=1
+                            count += 1
                             const parent1 = r["result"]["crabada_parents"][0]
                             const parent2 = r["result"]["crabada_parents"][1]
-                            if(parent1.class_name != parent2.class_name){
+                            if (parent1.class_name != parent2.class_name) {
                                 return
                             }
-                            if(parent1.pure_number !=6 || parent2.pure_number !=6){
+                            if (parent1.pure_number != 6 || parent2.pure_number != 6) {
                                 return
                             }
 
                             parent1.alleles = countAlleles(parent1.dna, parent1.class_name)
                             parent2.alleles = countAlleles(parent2.dna, parent2.class_name)
-                            if(parent1.alleles != 12 || parent2.alleles != 12){
+                            if (parent1.alleles != 12 || parent2.alleles != 12) {
                                 return
                             }
                             let aux = eggs_list[count]
@@ -457,7 +460,7 @@
                             if (pure_eggs_list.length > 0) {
                                 let table = ''
                                 table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
-                                    pure_eggs_list.forEach(c => {
+                                pure_eggs_list.forEach(c => {
                                     table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
                                 })
                                 table += "</tbody></table></br>"
