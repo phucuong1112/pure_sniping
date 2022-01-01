@@ -167,23 +167,27 @@
                     style="width: 10em" /><br><br>
                 Min Critical (optional): &nbsp;&nbsp;<input type="number" id="critical" step="1"
                     style="width: 10em" /><br><br>
-
+                Min BP (optional): &nbsp;&nbsp;<input type="number" id="minbp" step="1"
+                    style="width: 10em" /><br><br>
+                Min MP (optional): &nbsp;&nbsp;<input type="number" id="minmp" step="1"
+                    style="width: 10em" /><br><br>
                 <button id="calculateBtn" class="button" onclick="calculate_stats()">Find crabs!</button>
             </form>
         </div>
 
-        
+
         <div id="buy" class="tabcontent">
             <form id="crabs_settings" onsubmit="return false">
-                Crab ID: &nbsp;&nbsp; <input type="number" id="crabid" min="0" max="99999" step="1" style="width: 10em" />
+                Crab ID: &nbsp;&nbsp; <input type="number" id="crabid" min="0" max="99999" step="1"
+                    style="width: 10em" />
                 <br></br>
                 Price: &nbsp;&nbsp;<input type="number" id="price_buy" step="1" style="width: 10em" />
                 <br></br>
-    
+
                 <input type="checkbox" id="sameclass" name="sameclass">
                 <label for="sameclass">Compare only the same class</label><br></br>
-    
-    
+
+
                 <button id="calculateBtn" class="button" onclick="calculate_buy()">Find out!</button>
             </form>
         </div>
@@ -236,24 +240,23 @@
         let breed = document.getElementById("breed");
 
 
-        if (localStorage.getItem("pure") != null) {
+        if (localStorage.getItem("pure") == 'true') {
             pure.setAttribute("checked", localStorage.getItem("pure"));
         }
-
-        if (localStorage.getItem("pure_eggs") != null) {
+        if (localStorage.getItem("pure_eggs") == 'true') {
             pure_eggs.setAttribute("checked", localStorage.getItem("pure_eggs"));
         }
 
-        if (localStorage.getItem("legendary") != null) {
+        if (localStorage.getItem("legendary") == 'true') {
             legendary.setAttribute("checked", localStorage.getItem("legendary"));
         }
-        if (localStorage.getItem("highbp") != null) {
+        if (localStorage.getItem("highbp") == 'true') {
             highbp.setAttribute("checked", localStorage.getItem("highbp"));
         }
-        if (localStorage.getItem("highmp") != null) {
+        if (localStorage.getItem("highmp") == 'true') {
             highmp.setAttribute("checked", localStorage.getItem("highmp"));
         }
-        if (localStorage.getItem("c56") != null) {
+        if (localStorage.getItem("c56") == 'true') {
             c56.setAttribute("checked", localStorage.getItem("c56"));
         }
         if (localStorage.getItem("price") != null) {
@@ -268,6 +271,8 @@
         let armor = document.getElementById("armor");
         let speed = document.getElementById("speed");
         let critical = document.getElementById("critical");
+        let minbp = document.getElementById("minbp");
+        let minmp = document.getElementById("minmp");
 
         if (localStorage.getItem("damage") != null) {
             damage.setAttribute("value", localStorage.getItem("damage"));
@@ -284,6 +289,12 @@
         if (localStorage.getItem("critical") != null) {
             critical.setAttribute("value", localStorage.getItem("critical"));
         }
+        if (localStorage.getItem("minbp") != null) {
+            minbp.setAttribute("value", localStorage.getItem("minbp"));
+        }
+        if (localStorage.getItem("minmp") != null) {
+            minmp.setAttribute("value", localStorage.getItem("minmp"));
+        }
 
         let crabid = document.getElementById("crabid");
         let price_buy = document.getElementById("price_buy");
@@ -294,13 +305,13 @@
         let sameclass = document.getElementById("sameclass");
         let parametersameclass = GetURLParameter('sameclass');
 
-        
+
 
         if (parametercrabid != null && parameterprice != null && parametersameclass != null) {
             crabid.setAttribute("value", parametercrabid);
             price_buy.setAttribute("value", parameterprice);
             document.getElementById("tab_2").click();
-            if(parametersameclass == 1){
+            if (parametersameclass == 1) {
                 sameclass.setAttribute("checked", parametersameclass);
             }
             calculate_buy()
@@ -811,12 +822,16 @@
         let armor = document.getElementById("armor").value;
         let speed = document.getElementById("speed").value;
         let critical = document.getElementById("critical").value;
+        let minbp = document.getElementById("minbp").value;
+        let minmp = document.getElementById("minmp").value;
 
         localStorage.setItem("hp", hp);
         localStorage.setItem("damage", damage);
         localStorage.setItem("armor", armor);
         localStorage.setItem("speed", speed);
         localStorage.setItem("critical", critical);
+        localStorage.setItem("minbp", minbp);
+        localStorage.setItem("minmp", minmp);
 
         const crabs_fixed = {}
         crabs_fixed['RUINED'] = []
@@ -833,6 +848,9 @@
                 crabs = response["result"]["data"];
                 crabs.forEach(c => {
                     aux = {}
+                    aux.combat = c.hp + c.damage + c.armor
+                    aux.mine = c.speed + c.critical
+
                     if (hp && c.hp < hp) {
                         return
                     }
@@ -848,6 +866,12 @@
                     if (critical && c.critical < critical) {
                         return
                     }
+                    if (minbp && aux.combat < minbp) {
+                        return
+                    }
+                    if (minmp && aux.mine < minmp) {
+                        return
+                    }
 
                     aux.price = Math.round(c.price / 1.0e18)
                     aux.breed_count = c.breed_count
@@ -859,8 +883,6 @@
                     aux.armor = c.armor
                     aux.speed = c.speed
                     aux.critical = c.critical
-                    aux.combat = c.hp + c.damage + c.armor
-                    aux.mine = c.speed + c.critical
                     aux.url = `<a href="https://marketplace.crabada.com/crabada/${c.crabada_id}" target="_blank" rel="noopener noreferrer">${c.crabada_id}</a>`
                     aux.dnaurl = `<a href="https://crabada-resources.github.io/breeding_calculator?crabid=${c.crabada_id}" target="_blank" rel="noopener noreferrer">Link</a>`
 
