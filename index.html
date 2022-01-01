@@ -81,36 +81,112 @@
         background-color: #04AA6D;
         color: white;
     }
+
+    .tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .tab button {
+        background-color: inherit;
+        float: center;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        transition: 0.3s;
+        font-size: 17px;
+    }
+
+    .tab button:hover {
+        background-color: #ddd;
+    }
+
+    .tab button.active {
+        background-color: #ccc;
+    }
+
+    .tabcontent {
+        display: none;
+        padding: 20px 12px;
+        border: 1px solid #ccc;
+        border-top: none;
+    }
 </style>
 
 <body onload="checkSettings();">
     <ul class="nav">
         <li><a href="https://crabada-resources.github.io/looting_statistics/">Revenue statistics</a></li>
-        <li><a href="https://crabada-resources.github.io/should_i_buy/">Should I buy this crab?</a></li>
         <li><a href="https://crabada-resources.github.io/breeding_calculator/">Breeding calculator</a></li>
     </ul>
 
     <div id="header">
         <h2>Crab Finder</h2>
-        </br>
-        <form id="crabs_settings" onsubmit="return false">
-            <input type="checkbox" id="pure" name="pure" checked>
-            <label for="pure">Pure</label><br>
-            <input type="checkbox" id="pure_eggs" name="pure_eggs">
-            <label for="pure_eggs">Pure Eggs</label><br>
-            <input type="checkbox" id="legendary" name="legendary">
-            <label for="legendary">Legendary</label><br>
-            <input type="checkbox" id="highbp" name="highbp">
-            <label for="highbp">High BP (220+)</label><br>
-            <input type="checkbox" id="highmp" name="highmp">
-            <label for="highmp">High MP (77+)</label><br>
-            <input type="checkbox" id="c56" name="c56">
-            <label for="c56">5/6 and 6/6 non-pure</label><br>
-            Max price (optional): &nbsp;&nbsp;<input type="number" id="price" step="1" style="width: 10em" /><br>
-            Max breed (optional): &nbsp;&nbsp;<input type="number" id="breed" step="1" style="width: 10em" /><br><br>
+        <br></br>
 
-            <button id="calculateBtn" class="button" onclick="calculate()">Find crabs!</button>
-        </form>
+        <div class="tab">
+            <button class="tablinks" onclick="openTab(event, 'quick')" id="tab_1">Quick search</button>
+            <button class="tablinks" onclick="openTab(event, 'buy')" id="tab_2">Should I buy this crab?</button>
+            <button class="tablinks" onclick="openTab(event, 'stats')" id="tab_3">Search by stats</button>
+        </div>
+
+        <div id="quick" class="tabcontent">
+            <form id="quick_settings" onsubmit="return false">
+                <input type="checkbox" id="pure" name="pure" checked>
+                <label for="pure">Pure</label><br>
+                <input type="checkbox" id="pure_eggs" name="pure_eggs">
+                <label for="pure_eggs">Pure Eggs</label><br>
+                <input type="checkbox" id="legendary" name="legendary">
+                <label for="legendary">Legendary</label><br>
+                <input type="checkbox" id="highbp" name="highbp">
+                <label for="highbp">High BP (220+)</label><br>
+                <input type="checkbox" id="highmp" name="highmp">
+                <label for="highmp">High MP (77+)</label><br>
+                <input type="checkbox" id="c56" name="c56">
+                <label for="c56">5/6 and 6/6 non-pure</label><br>
+                Max price (optional): &nbsp;&nbsp;<input type="number" id="price" step="1" style="width: 10em" /><br>
+                Max breed (optional): &nbsp;&nbsp;<input type="number" id="breed" step="1"
+                    style="width: 10em" /><br><br>
+
+                <button id="calculateBtn" class="button" onclick="calculate_quick()">Find crabs!</button>
+            </form>
+        </div>
+
+
+        <div id="stats" class="tabcontent">
+            <form id="crabs_settings" onsubmit="return false">
+                Min HP (optional): &nbsp;&nbsp;<input type="number" id="hp" step="1" style="width: 10em" /><br><br>
+                Min Damage (optional): &nbsp;&nbsp;<input type="number" id="damage" step="1"
+                    style="width: 10em" /><br><br>
+                Min Armor (optional): &nbsp;&nbsp;<input type="number" id="armor" step="1"
+                    style="width: 10em" /><br><br>
+                Min Speed (optional): &nbsp;&nbsp;<input type="number" id="speed" step="1"
+                    style="width: 10em" /><br><br>
+                Min Critical (optional): &nbsp;&nbsp;<input type="number" id="critical" step="1"
+                    style="width: 10em" /><br><br>
+
+                <button id="calculateBtn" class="button" onclick="calculate_stats()">Find crabs!</button>
+            </form>
+        </div>
+
+        
+        <div id="buy" class="tabcontent">
+            <form id="crabs_settings" onsubmit="return false">
+                Crab ID: &nbsp;&nbsp; <input type="number" id="crabid" min="0" max="99999" step="1" style="width: 10em" />
+                <br></br>
+                Price: &nbsp;&nbsp;<input type="number" id="price_buy" step="1" style="width: 10em" />
+                <br></br>
+    
+                <input type="checkbox" id="sameclass" name="sameclass">
+                <label for="sameclass">Compare only the same class</label><br></br>
+    
+    
+                <button id="calculateBtn" class="button" onclick="calculate_buy()">Find out!</button>
+            </form>
+        </div>
 
         <div id="results" style="display: none">
             <h3> Results </h3>
@@ -122,6 +198,33 @@
 
 </body>
 <script type="text/javascript">
+    function openTab(evt, cityName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(cityName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+
+    document.getElementById("tab_1").click();
+
+    function GetURLParameter(sParam) {
+        const sPageURL = window.location.search.substring(1);
+        const sURLVariables = sPageURL.split('&');
+        for (let i = 0; i < sURLVariables.length; i++) {
+            const sParameterName = sURLVariables[i].split('=');
+            if (sParameterName[0] == sParam) {
+                return sParameterName[1];
+            }
+        }
+    }
+
     function checkSettings() {
         let pure = document.getElementById("pure");
         let pure_eggs = document.getElementById("pure_eggs");
@@ -158,6 +261,49 @@
         }
         if (localStorage.getItem("breed") != null) {
             breed.setAttribute("value", localStorage.getItem("breed"));
+        }
+
+        let hp = document.getElementById("hp");
+        let damage = document.getElementById("damage");
+        let armor = document.getElementById("armor");
+        let speed = document.getElementById("speed");
+        let critical = document.getElementById("critical");
+
+        if (localStorage.getItem("damage") != null) {
+            damage.setAttribute("value", localStorage.getItem("damage"));
+        }
+        if (localStorage.getItem("hp") != null) {
+            hp.setAttribute("value", localStorage.getItem("hp"));
+        }
+        if (localStorage.getItem("armor") != null) {
+            armor.setAttribute("value", localStorage.getItem("armor"));
+        }
+        if (localStorage.getItem("speed") != null) {
+            speed.setAttribute("value", localStorage.getItem("speed"));
+        }
+        if (localStorage.getItem("critical") != null) {
+            critical.setAttribute("value", localStorage.getItem("critical"));
+        }
+
+        let crabid = document.getElementById("crabid");
+        let price_buy = document.getElementById("price_buy");
+
+        let parametercrabid = GetURLParameter('crabid');
+        let parameterprice = GetURLParameter('price_buy');
+
+        let sameclass = document.getElementById("sameclass");
+        let parametersameclass = GetURLParameter('sameclass');
+
+        
+
+        if (parametercrabid != null && parameterprice != null && parametersameclass != null) {
+            crabid.setAttribute("value", parametercrabid);
+            price_buy.setAttribute("value", parameterprice);
+            document.getElementById("tab_2").click();
+            if(parametersameclass == 1){
+                sameclass.setAttribute("checked", parametersameclass);
+            }
+            calculate_buy()
         }
 
     }
@@ -319,7 +465,124 @@
         return subclass_map[id]
     }
 
-    function calculate() {
+    function calculate_buy() {
+        clearForm()
+        let crabid = document.getElementById("crabid").value;
+        let price = document.getElementById("price_buy").value;
+        let sameclass = document.getElementById("sameclass").checked;
+        let loading = document.getElementById("loading");
+
+        let results = document.getElementById("results");
+        results.style.display = "block";
+
+        const highbp_crabs = []
+        const highmp_crabs = []
+        const parts_crabs = []
+
+        requests = []
+        requests.push(fetch(`https://api.crabada.com/public/crabada/info/${crabid}`).then(response => response.json()))
+        requests.push(fetch(`https://api.crabada.com/public/crabada/selling?limit=1000&stage=1&orderBy=price&order=asc`).then(response => response.json()))
+
+        Promise.all(requests)
+            .then(function (responses) {
+                testcrab = responses[0]["result"]
+                testcrab.combat = testcrab.hp + testcrab.damage + testcrab.armor
+                testcrab.mine = testcrab.speed + testcrab.critical
+                testcrab.price = price
+                testcrab.origin = testcrab.is_origin == 1 ? 'Yes' : 'No'
+                testcrab.pure_parts = +(testcrab.class_id == testcrab.horn_class) + +(testcrab.class_id == testcrab.shell_class) + +(testcrab.class_id == testcrab.body_class) + +(testcrab.class_id == testcrab.mouth_class) + +(testcrab.class_id == testcrab.eyes_class) + +(testcrab.class_id == testcrab.pincers_class)
+                testcrab.alleles = countAlleles(testcrab.dna, testcrab.class_name)
+                testcrab.url = `<a href="https://marketplace.crabada.com/crabada/${testcrab.crabada_id}" target="_blank" rel="noopener noreferrer">${testcrab.crabada_id}</a>`
+                testcrab.dnaurl = `<a href="https://crabada-resources.github.io/breeding_calculator?crabid=${testcrab.crabada_id}" target="_blank" rel="noopener noreferrer">Link</a>`
+                testcrab.subclass_name = lookup_subclass(testcrab.crabada_subclass)
+
+                crabs = responses[1]["result"]["data"];
+                crabs.forEach(c => {
+                    aux = {}
+                    aux.crabada_id = c.crabada_id
+                    aux.class_name = c.class_name
+                    aux.breed_count = c.breed_count
+                    aux.combat = c.hp + c.damage + c.armor
+                    aux.mine = c.speed + c.critical
+                    aux.price = Math.round(c.price / 1.0e18)
+                    aux.origin = c.is_origin == 1 ? 'Yes' : 'No'
+                    aux.pure_parts = +(c.class_id == c.horn_class) + +(c.class_id == c.shell_class) + +(c.class_id == c.body_class) + +(c.class_id == c.mouth_class) + +(c.class_id == c.eyes_class) + +(c.class_id == c.pincers_class)
+                    aux.alleles = countAlleles(c.dna, c.class_name)
+                    aux.url = `<a href="https://marketplace.crabada.com/crabada/${c.crabada_id}" target="_blank" rel="noopener noreferrer">${c.crabada_id}</a>`
+                    aux.dnaurl = `<a href="https://crabada-resources.github.io/breeding_calculator?crabid=${c.crabada_id}" target="_blank" rel="noopener noreferrer">Link</a>`
+                    aux.subclass_name = lookup_subclass(aux.crabada_subclass)
+
+                    if (!sameclass || (sameclass && aux.class_name == testcrab.class_name)) {
+                        if (aux.combat >= testcrab.combat && aux.price < testcrab.price) {
+                            highbp_crabs.push(aux)
+                        }
+                        if (aux.mine >= testcrab.mine && aux.price < testcrab.price) {
+                            highmp_crabs.push(aux)
+                        }
+                        if (aux.pure_parts >= testcrab.pure_parts && aux.price < testcrab.price) {
+                            parts_crabs.push(aux)
+                        }
+                    }
+                })
+
+                loading.innerHTML = "";
+
+                let resuls_text = document.getElementById("resuls_text");
+                resuls_text.innerHTML = ''
+
+                resuls_text.innerHTML += "<h4>Selected crab stats:</h4>"
+                let table = ''
+                table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Subclass</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
+                table += `<tr><td>${testcrab.price}</td><td>${testcrab.class_name}</td><td>${testcrab.subclass_name}</td><td>${testcrab.combat}</td><td>${testcrab.mine}</td><td>${testcrab.breed_count}</td><td>${testcrab.origin}</td><td>${testcrab.pure_parts}</td><td>${testcrab.alleles}</td><td>${testcrab.url}</td><td>${testcrab.dnaurl}</td></tr>`
+                table += "</tbody></table></br>"
+                resuls_text.innerHTML += table
+
+
+                resuls_text.innerHTML += "<h4>Crabs with higher/same BP and cheaper: " + highbp_crabs.length + "</h4>"
+                if (highbp_crabs.length > 0) {
+                    let table = ''
+                    table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Subclass</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></th></thead><tbody>`
+                    highbp_crabs.forEach(c => {
+                        table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.subclass_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
+                    })
+                    table += "</tbody></table></br>"
+                    resuls_text.innerHTML += table
+                } else {
+                    resuls_text.innerHTML += "None found!"
+                }
+                resuls_text.innerHTML += "<h4>Crabs with higher/same MP and cheaper: " + highmp_crabs.length + "</h4>"
+                if (highmp_crabs.length > 0) {
+                    let table = ''
+                    table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Subclass</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></th></thead><tbody>`
+                    highmp_crabs.forEach(c => {
+                        table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.subclass_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
+                    })
+                    table += "</tbody></table></br>"
+                    resuls_text.innerHTML += table
+                } else {
+                    resuls_text.innerHTML += "None found!"
+                }
+                resuls_text.innerHTML += "<h4>Crabs with more/same pure parts and cheaper: " + parts_crabs.length + "</h4>"
+                if (parts_crabs.length > 0) {
+                    let table = ''
+                    table += `<table><thead><tr><th>Price (TUS)</th><th>Class</th><th>Subclass</th><th>BP</th><th>MP</th><th>Breed count</th><th>Is origin?</th><th>Pure parts</th><th>Pure R Alleles</th><th>Crab ID</th><th>DNA</th></th></thead><tbody>`
+                    parts_crabs.forEach(c => {
+                        table += `<tr><td>${c.price}</td><td>${c.class_name}</td><td>${c.subclass_name}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.origin}</td><td>${c.pure_parts}</td><td>${c.alleles}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
+                    })
+                    table += "</tbody></table></br>"
+                    resuls_text.innerHTML += table
+                } else {
+                    resuls_text.innerHTML += "None found!"
+                }
+
+
+
+            }).catch(function (error) {
+                console.log(error);
+            });
+    }
+
+    function calculate_quick() {
         clearForm()
         let loading = document.getElementById("loading");
 
@@ -353,7 +616,6 @@
         const highbp_crabs = []
         const highmp_crabs = []
         const c56_crabs = []
-
 
         fetch(`https://api.crabada.com/public/crabada/selling?limit=2000&orderBy=price&order=asc`).then(response => response.json())
             .then(function (response) {
@@ -397,6 +659,7 @@
                         if (c56 && (aux.pure_parts == 5 || (aux.pure_parts == 6 && aux.alleles < 12))) {
                             c56_crabs.push(aux)
                         }
+
                     } else {
                         if (pure_eggs) {
                             aux.dnaurl = `<a href="https://crabada-resources.github.io/breeding_calculator?eggid=${c.crabada_id}" target="_blank" rel="noopener noreferrer">Link</a>`
@@ -531,6 +794,103 @@
                     }).catch(function (error) {
                         console.log(error);
                     });
+            }).catch(function (error) {
+                console.log(error);
+            });
+    }
+
+    function calculate_stats() {
+        clearForm()
+        let loading = document.getElementById("loading");
+
+        let results = document.getElementById("results");
+        results.style.display = "block";
+
+        let hp = document.getElementById("hp").value;
+        let damage = document.getElementById("damage").value;
+        let armor = document.getElementById("armor").value;
+        let speed = document.getElementById("speed").value;
+        let critical = document.getElementById("critical").value;
+
+        localStorage.setItem("hp", hp);
+        localStorage.setItem("damage", damage);
+        localStorage.setItem("armor", armor);
+        localStorage.setItem("speed", speed);
+        localStorage.setItem("critical", critical);
+
+        const crabs_fixed = {}
+        crabs_fixed['RUINED'] = []
+        crabs_fixed['SUNKEN'] = []
+        crabs_fixed['SURGE'] = []
+        crabs_fixed['BULK'] = []
+        crabs_fixed['PRIME'] = []
+        crabs_fixed['GEM'] = []
+        crabs_fixed['CRABOID'] = []
+        crabs_fixed['ORGANIC'] = []
+
+        fetch(`https://api.crabada.com/public/crabada/selling?limit=2000&stage=1&orderBy=price&order=asc`).then(response => response.json())
+            .then(function (response) {
+                crabs = response["result"]["data"];
+                crabs.forEach(c => {
+                    aux = {}
+                    if (hp && c.hp < hp) {
+                        return
+                    }
+                    if (damage && c.damage < damage) {
+                        return
+                    }
+                    if (armor && c.armor < armor) {
+                        return
+                    }
+                    if (speed && c.speed < speed) {
+                        return
+                    }
+                    if (critical && c.critical < critical) {
+                        return
+                    }
+
+                    aux.price = Math.round(c.price / 1.0e18)
+                    aux.breed_count = c.breed_count
+                    aux.crabada_id = c.crabada_id
+                    aux.class_name = c.class_name
+                    aux.subclass_name = lookup_subclass(c.crabada_subclass)
+                    aux.hp = c.hp
+                    aux.damage = c.damage
+                    aux.armor = c.armor
+                    aux.speed = c.speed
+                    aux.critical = c.critical
+                    aux.combat = c.hp + c.damage + c.armor
+                    aux.mine = c.speed + c.critical
+                    aux.url = `<a href="https://marketplace.crabada.com/crabada/${c.crabada_id}" target="_blank" rel="noopener noreferrer">${c.crabada_id}</a>`
+                    aux.dnaurl = `<a href="https://crabada-resources.github.io/breeding_calculator?crabid=${c.crabada_id}" target="_blank" rel="noopener noreferrer">Link</a>`
+
+                    crabs_fixed[aux.class_name].push(aux)
+                })
+                loading.innerHTML = "";
+
+                let resuls_text = document.getElementById("resuls_text");
+                resuls_text.innerHTML = ''
+
+                for (const crabclass in crabs_fixed) {
+                    resuls_text.innerHTML += `<h4>${crabclass}</h4>`
+                    if (crabs_fixed[crabclass].length > 0) {
+                        let table = ''
+                        table += `<table><thead><tr><th>Price (TUS)</th><th>Subclass</th><th>HP</th><th>Damage</th><th>Armor</th><th>Speed</th><th>Critical</th><th>BP</th><th>MP</th><th>Breed count</th><th>Crab ID</th><th>DNA</th></tr></thead><tbody>`
+                        crabs_fixed[crabclass].forEach(c => {
+                            table += `<tr><td>${c.price}</td><td>${c.subclass_name}</td><td>${c.hp}</td><td>${c.damage}</td><td>${c.armor}</td><td>${c.speed}</td><td>${c.critical}</td><td>${c.combat}</td><td>${c.mine}</td><td>${c.breed_count}</td><td>${c.url}</td><td>${c.dnaurl}</td></tr>`
+                        })
+                        table += "</tbody></table></br>"
+                        resuls_text.innerHTML += table
+
+                    } else {
+                        resuls_text.innerHTML += `None found!`
+                    }
+                }
+
+
+
+
+
             }).catch(function (error) {
                 console.log(error);
             });
