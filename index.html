@@ -171,7 +171,8 @@
                 Min MP (optional): &nbsp;&nbsp;<input type="number" id="minmp" step="1" style="width: 10em" /><br><br>
                 Max price (optional): &nbsp;&nbsp;<input type="number" id="max_price" step="1"
                     style="width: 10em" /><br><br>
-
+                Max breed (optional): &nbsp;&nbsp;<input type="number" id="max_breed" step="1"
+                    style="width: 10em" /><br><br>
 
                 <button id="calculateBtn" class="button" onclick="calculate_stats()">Find crabs!</button>
             </form>
@@ -276,6 +277,7 @@
         let minbp = document.getElementById("minbp");
         let minmp = document.getElementById("minmp");
         let max_price = document.getElementById("max_price");
+        let max_breed = document.getElementById("max_breed");
 
         if (localStorage.getItem("damage") != null) {
             damage.setAttribute("value", localStorage.getItem("damage"));
@@ -301,7 +303,10 @@
         if (localStorage.getItem("max_price") != null) {
             max_price.setAttribute("value", localStorage.getItem("max_price"));
         }
-
+        if (localStorage.getItem("max_breed") != null) {
+            max_breed.setAttribute("value", localStorage.getItem("max_breed"));
+        }
+        
         let crabid = document.getElementById("crabid");
         let price_buy = document.getElementById("price_buy");
 
@@ -831,9 +836,8 @@
         let minbp = document.getElementById("minbp").value;
         let minmp = document.getElementById("minmp").value;
         let max_price = document.getElementById("max_price").value;
+        let max_breed = document.getElementById("max_breed").value;
 
-
-        
         localStorage.setItem("hp", hp);
         localStorage.setItem("damage", damage);
         localStorage.setItem("armor", armor);
@@ -842,6 +846,7 @@
         localStorage.setItem("minbp", minbp);
         localStorage.setItem("minmp", minmp);
         localStorage.setItem("max_price", max_price);
+        localStorage.setItem("max_breed", max_breed);
 
         const crabs_fixed = {}
         crabs_fixed['RUINED'] = []
@@ -861,6 +866,7 @@
                     aux.combat = c.hp + c.damage + c.armor
                     aux.mine = c.speed + c.critical
                     aux.price = Math.round(c.price / 1.0e18)
+                    aux.breed_count = c.breed_count
 
                     if (hp && c.hp < hp) {
                         return
@@ -886,8 +892,10 @@
                     if (max_price && aux.price > max_price) {
                         return
                     }
-
-                    aux.breed_count = c.breed_count
+                    if (max_breed && aux.breed_count > max_breed) {
+                        return
+                    }
+                
                     aux.crabada_id = c.crabada_id
                     aux.class_name = c.class_name
                     aux.subclass_name = lookup_subclass(c.crabada_subclass)
