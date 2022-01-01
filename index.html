@@ -167,10 +167,12 @@
                     style="width: 10em" /><br><br>
                 Min Critical (optional): &nbsp;&nbsp;<input type="number" id="critical" step="1"
                     style="width: 10em" /><br><br>
-                Min BP (optional): &nbsp;&nbsp;<input type="number" id="minbp" step="1"
+                Min BP (optional): &nbsp;&nbsp;<input type="number" id="minbp" step="1" style="width: 10em" /><br><br>
+                Min MP (optional): &nbsp;&nbsp;<input type="number" id="minmp" step="1" style="width: 10em" /><br><br>
+                Max price (optional): &nbsp;&nbsp;<input type="number" id="max_price" step="1"
                     style="width: 10em" /><br><br>
-                Min MP (optional): &nbsp;&nbsp;<input type="number" id="minmp" step="1"
-                    style="width: 10em" /><br><br>
+
+
                 <button id="calculateBtn" class="button" onclick="calculate_stats()">Find crabs!</button>
             </form>
         </div>
@@ -273,6 +275,7 @@
         let critical = document.getElementById("critical");
         let minbp = document.getElementById("minbp");
         let minmp = document.getElementById("minmp");
+        let max_price = document.getElementById("max_price");
 
         if (localStorage.getItem("damage") != null) {
             damage.setAttribute("value", localStorage.getItem("damage"));
@@ -294,6 +297,9 @@
         }
         if (localStorage.getItem("minmp") != null) {
             minmp.setAttribute("value", localStorage.getItem("minmp"));
+        }
+        if (localStorage.getItem("max_price") != null) {
+            max_price.setAttribute("value", localStorage.getItem("max_price"));
         }
 
         let crabid = document.getElementById("crabid");
@@ -824,7 +830,10 @@
         let critical = document.getElementById("critical").value;
         let minbp = document.getElementById("minbp").value;
         let minmp = document.getElementById("minmp").value;
+        let max_price = document.getElementById("max_price").value;
 
+
+        
         localStorage.setItem("hp", hp);
         localStorage.setItem("damage", damage);
         localStorage.setItem("armor", armor);
@@ -832,6 +841,7 @@
         localStorage.setItem("critical", critical);
         localStorage.setItem("minbp", minbp);
         localStorage.setItem("minmp", minmp);
+        localStorage.setItem("max_price", max_price);
 
         const crabs_fixed = {}
         crabs_fixed['RUINED'] = []
@@ -850,6 +860,7 @@
                     aux = {}
                     aux.combat = c.hp + c.damage + c.armor
                     aux.mine = c.speed + c.critical
+                    aux.price = Math.round(c.price / 1.0e18)
 
                     if (hp && c.hp < hp) {
                         return
@@ -872,8 +883,10 @@
                     if (minmp && aux.mine < minmp) {
                         return
                     }
+                    if (max_price && aux.price > max_price) {
+                        return
+                    }
 
-                    aux.price = Math.round(c.price / 1.0e18)
                     aux.breed_count = c.breed_count
                     aux.crabada_id = c.crabada_id
                     aux.class_name = c.class_name
