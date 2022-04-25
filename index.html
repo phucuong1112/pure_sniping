@@ -503,7 +503,7 @@
 
         requests = []
         requests.push(fetch(`https://api.crabada.com/public/crabada/info/${crabid}`).then(response => response.json()))
-        requests.push(fetch(`https://api.crabada.com/public/crabada/selling?limit=1000&stage=1&orderBy=price&order=asc`).then(response => response.json()))
+        requests.push(fetch(`https://api.crabada.com/public/crabada/selling?limit=100&stage=1&orderBy=price&order=asc`).then(response => response.json()))
 
         Promise.all(requests)
             .then(function (responses) {
@@ -639,7 +639,7 @@
         const highmp_crabs = []
         const c56_crabs = []
 
-        fetch(`https://api.crabada.com/public/crabada/selling?limit=1000&orderBy=price&order=asc`).then(response => response.json())
+        fetch(`https://api.crabada.com/public/crabada/selling?limit=100&orderBy=price&order=asc`).then(response => response.json())
             .then(function (response) {
                 crabs = response["result"]["data"];
                 crabs.forEach(c => {
@@ -858,7 +858,7 @@
         crabs_fixed['CRABOID'] = []
         crabs_fixed['ORGANIC'] = []
 
-        fetch(`https://api.crabada.com/public/crabada/selling?limit=1000&stage=1&orderBy=price&order=asc`).then(response => response.json())
+        fetch(`https://api.crabada.com/public/crabada/selling?limit=100&stage=1&orderBy=price&order=asc`).then(response => response.json())
             .then(function (response) {
                 crabs = response["result"]["data"];
                 crabs.forEach(c => {
